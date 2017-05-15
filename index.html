@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+
+html, body{
+	margin:0;
+	padding:0;
+	background-color: black;
+	height: 100vh;
+	width: 100vw;
+	overflow: hidden;
+	cursor:none; 
+}
+
+#slide{
+	
+	width: 100vw;
+	height: 100vh;
+	background-size: contain;
+	background-position: center;
+	background-repeat: no-repeat;
+	position: absolute;
+	top: 0;
+	left: 0;
+
+
+}
+
+#bkgd-slide{
+	background-color: black;
+	width: 100vw;
+	height: 100vh;
+	background-size: contain;
+	
+	position: absolute;
+	top: 0;
+	left: 0;
+	filter: blur(13px);
+	transform:scale(1.1);
+
+}
+.path{
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	color: white;
+}
+
+#photos{
+	/*transition: opacity .5s linear;
+	opacity: 0;
+	
+	animation: fadeOutIn 1s linear;
+	*/
+
+}
+
+.fade{
+	animation: fadeOutIn 1s linear;
+}
+
+#photos.loaded{
+	opacity: 1;
+}
+
+@keyframes fadeOutIn {
+ 
+  0% {
+    opacity:0;
+  }
+  100% {
+    opacity:1;
+  }
+}
+
+
+</style>
+</head>
+<body>
+<div id="photos" class="fade">
+	<div id="bkgd-slide"></div>
+	<div id="slide"></div>
+	<!--<h2 class="path"></h2>-->
+</div>
+
+<!--
+<script>
+var xhttp = new XMLHttpRequest();
+xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+    myFunction(this);
+    }
+};
+xhttp.open("GET", "picasa.xml", true);
+xhttp.send();
+
+function myFunction(xml) {
+    var xmlDoc = xml.responseXML;
+
+    var xmldata=xmlDoc.getElementsByTagName("media\\:content")[0];
+    console.log(xmldata)
+    document.getElementById("demo").innerHTML =
+    xmlDoc.getElementsByTagName("title")[0].childNodes[0].nodeValue;
+}
+</script>
+-->
+<script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+
+<script>
+$(document).ready(function(){
+
+	var picArr = [];
+	var duration = 10000;
+
+
+   $.ajax({
+    type: "GET" ,
+    url: "picasa.xml" ,
+    dataType: "xml" ,
+    success: function(xml) {
+
+    //var xmlDoc = $.parseXML( xml );   <------------------this line
+    //if single item
+ //   var person = $(xml).find('title').text();  
+
+  //  $('#demo').text(person);
+
+
+    //but if it's multible items then loop
+//$(xml).find('media\\:content, content');
+    $(xml).find('media\\:content, content').each(function(){
+    	//console.log($(this)[0].attributes.url.text())
+    	var img = $(this)[0].attributes.url.nodeValue;
+
+    	var ext = img.substring(img.lastIndexOf(".")+1);
+    	//console.log(img.substring(img.lastIndexOf(".")+1))
+    	//console.log(img)
+    	if (ext == 'jpg' || ext=='JPG'){
+    		picArr.push(img)
+    	}
+    // $("#demo").append('<li><img src=' + img + '></img></li>');  
+    }); 
+
+    initSlides();
+    
+    }       
+
+});
+
+
+   function initSlides(){
+   		var totalPics = picArr.length;
+   		console.log(totalPics)
+
+   		setInterval(function(){ 
+
+   			// retrieve the element
+			element = document.getElementById("photos");
+
+			// reset the transition by...
+
+			  // -> removing the class
+			  element.classList.remove("fade");
+			  
+			  // -> triggering reflow /* The actual magic */
+			  // without this it wouldn't work. Try uncommenting the line and the transition won't be retriggered.
+			  // Oops! This won't work in strict mode. Thanks Felis Phasma!
+			  // element.offsetWidth = element.offsetWidth;
+			  // Do this instead:
+			  void element.offsetWidth;
+			  
+			  // -> and re-adding the class
+			  element.classList.add("fade");
+	
+
+   			//alert("Hello"); 
+   			var rand = Math.floor(Math.random() * (totalPics-1));
+   			
+   			console.log(rand)
+   			var img = picArr[rand];
+   			console.log(img);
+   			//$("#slide").html('<img src=' + img + '></img>'); 
+   			$("#slide").css('background-image', 'url(' + img + ')'); 
+   			$("#bkgd-slide").css('background-image', 'url(' + img + ')'); 
+   			//$(".path").text(img);
+   		}, duration);
+
+   }
+
+
+});
+</script>
+
+</body>
+</html>
