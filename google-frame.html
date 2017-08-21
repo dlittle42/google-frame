@@ -40,6 +40,17 @@ html, body{
 	transform:scale(1.1);
 
 }
+
+#pre{
+	width: 50px;
+	height:50px;
+	position: absolute;
+	top: 0;
+	left:0;
+	z-index: 999;
+	background-color: red;
+
+}
 .path{
 	position: absolute;
 	bottom: 0;
@@ -78,8 +89,10 @@ html, body{
 </head>
 <body>
 <div id="photos" class="fade">
+	<div id="pre"></div>
 	<div id="bkgd-slide"></div>
 	<div id="slide"></div>
+	<img src="https://lh3.googleusercontent.com/-uMxzM_IwaR4/WF2Ec2OrfhI/AAAAAAAArb0/0IW7UzrtOnoc7s8_BTP4Qt_smjFwelVWwCHM/s1280/IMG_0166.JPG">
 	<!--<h2 class="path"></h2>-->
 </div>
 
@@ -114,9 +127,7 @@ $(document).ready(function(){
 
 	var picArr = [];
 	var duration = 10000;
-	var element = document.getElementById("photos");
-	var newImg;
-	var my_image = new Image();
+	var totalPics;
 
 
    $.ajax({
@@ -149,77 +160,65 @@ $(document).ready(function(){
 	    	}
 
 		}
-	});
-/*
-    $(xml).find('media\\:content, content').each(function(){
-    	//console.log($(this)[0].attributes.url.text())
-    	var img = $(this)[0].attributes.url.nodeValue;
 
-    	var ext = img.substring(img.lastIndexOf(".")+1);
-    	//console.log(img.substring(img.lastIndexOf(".")+1))
-    	//console.log(img)
-    	if (ext == 'jpg' || ext=='JPG'){
-    		picArr.push(img)
-    	}
-    // $("#demo").append('<li><img src=' + img + '></img></li>');  
-    }); 
-*/
-	getNewImg();
-    setInterval(getNewImg, duration);
+	     totalPics = picArr.length;
+	});
+
+	preloadImg();
+    initSlides();
     
     }       
 
 });
 
 
-
-
-// we will call this function when the image has finished loading
-function notify_complete(img)
-{
-// reset the transition by...
-
-	  // -> removing the class
-	  element.classList.remove("fade");
-	  
-	  // -> triggering reflow /* The actual magic */
-	  // without this it wouldn't work. Try uncommenting the line and the transition won't be retriggered.
-	  // Oops! This won't work in strict mode. Thanks Felis Phasma!
-	  // element.offsetWidth = element.offsetWidth;
-	  // Do this instead:
-	  void element.offsetWidth;
-	  
-	  // -> and re-adding the class
-	  element.classList.add("fade");
-
-	  $("#slide").css('background-image', 'url(' + newImg + ')'); 
-   	  $("#bkgd-slide").css('background-image', 'url(' + newImg + ')'); 
-   // alert('The image has been loaded into the browser cache.');
-}
-
-function load_image()
-{
-    // call the notify_complete function when the image has loaded
-    my_image.onload = notify_complete;
-
-    // load the image
-    my_image.src = newImg;
-}
-
    function initSlides(){
-   		var totalPics = picArr.length;
+   		
    		console.log(totalPics)
 
-   		setInterval(getNewImg, duration);
+   		setInterval(function(){ 
+
+   			// retrieve the element
+			element = document.getElementById("photos");
+
+			// reset the transition by...
+
+			  // -> removing the class
+			  element.classList.remove("fade");
+			  
+			  // -> triggering reflow /* The actual magic */
+			  // without this it wouldn't work. Try uncommenting the line and the transition won't be retriggered.
+			  // Oops! This won't work in strict mode. Thanks Felis Phasma!
+			  // element.offsetWidth = element.offsetWidth;
+			  // Do this instead:
+			  void element.offsetWidth;
+			  
+			  // -> and re-adding the class
+			  element.classList.add("fade");
+	
+
+   			//alert("Hello"); 
+   			var rand = Math.floor(Math.random() * (totalPics-1));
+   			
+   			//console.log(rand)
+   			var img = picArr[rand];
+   			console.log(img);
+   			//$("#slide").html('<img src=' + img + '></img>'); 
+   			$("#slide").css('background-image', 'url(' + img + ')'); 
+   			$("#bkgd-slide").css('background-image', 'url(' + img + ')'); 
+   			//$(".path").text(img);
+   		}, duration);
 
    }
 
-   function getNewImg(){
-   		var totalPics = picArr.length;
-   		console.log(totalPics)
+   function preloadImg(){
    		var rand = Math.floor(Math.random() * (totalPics-1));
-		newImg = picArr[rand];
-		load_image();
+   			
+		//console.log(rand)
+		var img = picArr[rand];
+		//console.log(img);
+		//$("#slide").html('<img src=' + img + '></img>'); 
+		$("#slide").css('background-image', 'url(' + img + ')'); 
    }
 
 
